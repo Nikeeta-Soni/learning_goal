@@ -1,0 +1,60 @@
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class View_LogHistory {
+    public static void main(String[] args) {
+        WebDriver driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+        driver.get("https://provider.birthmodel.com");
+        driver.manage().window().maximize();
+        driver.findElement(By.id("email")).sendKeys("betty@yopmail.com");
+        driver.findElement(By.id("password")).sendKeys("Test@123");
+        driver.findElement(By.xpath("//*[@id=\"btn-login\"]")).click();
+
+        try {
+            // Using WebDriverWait to wait for the element to be clickable
+            WebElement activePatientsLink = new WebDriverWait(driver, Duration.ofSeconds(60))
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id=\"root\"]//ul//li[3]")));
+
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", activePatientsLink);
+            activePatientsLink.click();
+
+        } catch (ElementClickInterceptedException e) {
+            System.out.println("ElementClickInterceptedException: " + e.getMessage());
+        } catch (StaleElementReferenceException e) {
+            System.out.println("StaleElementReferenceException: " + e.getMessage());
+            WebElement activePatientsLink = new WebDriverWait(driver, Duration.ofSeconds(60))
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id=\"root\"]//ul//li[3]")));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", activePatientsLink);
+            activePatientsLink.click();
+        }
+
+        try {
+            // Locate and click on the desired elements
+            WebElement firstRowOptions = new WebDriverWait(driver, Duration.ofSeconds(30))
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"table-scroll-box\"]/table/tbody/tr[1]/td[7]")));
+            firstRowOptions.click();
+
+            WebElement drawerClick = new WebDriverWait(driver, Duration.ofSeconds(30))
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"drawer-click\"]")));
+            drawerClick.click();
+
+            WebElement historyButton = new WebDriverWait(driver, Duration.ofSeconds(30))
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[3]/div/div[11]/div/button[3]")));
+            historyButton.click();
+
+            WebElement closeButton = new WebDriverWait(driver, Duration.ofSeconds(30))
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[3]/div/div[1]/div[2]/img")));
+            closeButton.click();
+
+        } catch (StaleElementReferenceException e) {
+            System.out.println("StaleElementReferenceException: " + e.getMessage());
+            // Retry logic or re-locate the element if necessary
+        }
+
+        driver.quit();
+    }
+}
